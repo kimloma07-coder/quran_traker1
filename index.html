@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منظّم ختمات التلاوة الشهرية – رواية ورش عن نافع</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ===== 1) المتغيرات: عدّلي الألوان والأبعاد من هنا ===== */
+:root {
+  --bg: #f4f6f1;            /* خلفية الصفحة */
+  --surface: #ffffff;       /* البطاقات */
+  --line: #e3e8df;          /* الحدود */
+  --ink: #1f2d27;           /* النص */
+  --ink-soft: #66756d;      /* نص ثانوي */
+  --olive: #0d6e55;         /* الزمردي الأساسي */
+  --olive-deep: #084c3b;    /* زمردي داكن */
+  --mint: #e3f1ea;          /* زمردي فاتح */
+  --done: #edf7f1;          /* لون صف اليوم المنجز */
+  --accent: #c79a3b;        /* لمسة ذهبية ليوم اليوم */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --gap: 18px;
+  --max: 1080px;
+  --shadow: 0 10px 28px -16px rgba(8, 76, 59, .3);
+}
+
+/* ===== 2) الأساسيات ===== */
+* { box-sizing: border-box; margin: 0; }
+body { font-family: 'Tajawal', system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.7; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 16px 56px; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--olive); outline-offset: 2px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+h2 { font-size: 1.1rem; font-weight: 800; color: var(--olive-deep); margin-bottom: 14px; }
+
+/* ===== 3) الرأس ===== */
+header { padding: 30px 0 18px; display: flex; align-items: center; gap: 14px; }
+.logo { width: 52px; height: 52px; border-radius: 16px; background: var(--olive); display: grid; place-items: center; flex-shrink: 0; }
+.logo svg { width: 28px; height: 28px; }
+header h1 { font-size: clamp(1.25rem, 4vw, 1.75rem); font-weight: 800; color: var(--olive-deep); line-height: 1.3; }
+header p { color: var(--ink-soft); font-size: .93rem; }
+
+/* ===== 4) الإحصائيات ===== */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap); margin-bottom: var(--gap); }
+.stat-label { color: var(--ink-soft); font-size: .92rem; }
+.stat-value { font-size: 2.1rem; font-weight: 800; color: var(--olive-deep); line-height: 1.25; }
+.stat-value small { font-size: .95rem; font-weight: 500; color: var(--ink-soft); }
+.bar { height: 10px; border-radius: 99px; background: var(--mint); overflow: hidden; margin-top: 10px; }
+.bar > i { display: block; height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--olive), #3fae8a); transition: width .5s ease; }
+
+/* ===== 5) النموذج ===== */
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; align-items: end; }
+.field label { display: block; font-size: .85rem; color: var(--ink-soft); margin-bottom: 4px; }
+.field input, .field select { width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
+.field input:hover, .field select:hover { border-color: var(--olive); }
+.row-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { cursor: pointer; border: 0; padding: 11px 20px; border-radius: var(--radius-sm); font-weight: 700; background: var(--olive); color: #fff; transition: background .2s, transform .1s; }
+.btn:hover { background: var(--olive-deep); }
+.btn:active { transform: scale(.98); }
+.btn.soft { background: var(--mint); color: var(--olive-deep); }
+.btn.soft:hover { background: #d3e8dd; }
+.btn.danger { background: #fbeceb; color: #a43b32; }
+.btn.small { padding: 6px 12px; font-size: .85rem; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.section { margin-top: 28px; }
+.section-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.section-head h2 { margin: 0; }
+
+/* ===== 6) الجدول ===== */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; min-width: 700px; }
+th { background: var(--mint); color: var(--olive-deep); text-align: right; padding: 12px 14px; font-size: .92rem; }
+td { padding: 11px 14px; border-top: 1px solid var(--line); vertical-align: middle; }
+tbody tr { transition: background .3s; }
+tbody tr.done { background: var(--done); }              /* حالة الإنجاز */
+tbody tr.today { box-shadow: inset -4px 0 0 var(--accent); }  /* يوم اليوم */
+.day { font-weight: 700; }
+.sub { font-size: .8rem; color: var(--ink-soft); }
+.hizb-badge { display: inline-block; background: var(--mint); color: var(--olive-deep); font-weight: 700; padding: 2px 12px; border-radius: 99px; }
+.range { font-weight: 500; }
+input[type=checkbox] { appearance: none; width: 26px; height: 26px; cursor: pointer; border: 2px solid #c3cdc5; border-radius: 8px; background: #fff; display: grid; place-content: center; transition: .2s; }
+input[type=checkbox]::after { content: ""; width: 12px; height: 7px; border: solid #fff; border-width: 0 0 3px 3px; transform: rotate(-45deg) scale(0); margin-top: -3px; transition: .15s; }
+input[type=checkbox]:checked { background: var(--olive); border-color: var(--olive); }
+input[type=checkbox]:checked::after { transform: rotate(-45deg) scale(1); }
+.empty { text-align: center; color: var(--ink-soft); padding: 34px 14px; }
+
+/* ===== 7) الأرشيف ===== */
+.archive-item { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; padding: 16px 0; border-top: 1px solid var(--line); }
+.archive-item:first-of-type { border-top: 0; }
+.archive-item .bar { grid-column: 1 / -1; margin-top: 2px; }
+.pct { font-weight: 800; color: var(--olive-deep); font-size: 1.2rem; }
+
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 90px); background: var(--olive-deep); color: #fff; padding: 11px 22px; border-radius: 99px; transition: transform .3s; z-index: 10; }
+.toast.show { transform: translate(-50%, 0); }
+
+/* ===== 8) التجاوب: على الهاتف يتحول الجدول إلى بطاقات ===== */
+@media (max-width: 800px) {
+  .stats { grid-template-columns: 1fr; }
+  .card { padding: 18px; }
+  .table-wrap { background: none; border: 0; box-shadow: none; overflow: visible; }
+  table, tbody { display: block; min-width: 0; }
+  thead { display: none; }
+  tbody tr { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+  tbody tr.done { background: var(--done); }
+  td { display: block; border: 0; padding: 0; }
+  td.c-range { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2z"/><path d="M12 6.5v13"/></svg>
+    </div>
+    <div>
+      <h1>منظّم ختمات التلاوة الشهرية</h1>
+      <p>برواية ورش عن نافع</p>
+    </div>
+  </header>
+
+  <!-- ===== الإحصائيات (تتحدث فوراً مع كل علامة إنجاز) ===== -->
+  <section class="stats" aria-label="الإحصائيات">
+    <div class="card">
+      <div class="stat-label">نسبة إنجاز الختمة الحالية</div>
+      <div class="stat-value"><span id="sPct">0</span><small>%</small></div>
+      <div class="bar"><i id="sBar"></i></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">الأحزاب المتبقية</div>
+      <div class="stat-value"><span id="sHizb">60</span> <small>من 60</small></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">الأيام المتبقية للنهاية</div>
+      <div class="stat-value"><span id="sDays">0</span> <small>يوم</small></div>
+      <div class="sub" id="sDaysNote">بما فيها اليوم</div>
+    </div>
+  </section>
+
+  <!-- ===== مولّد الخطة ===== -->
+  <section class="card" aria-label="مولد الخطة">
+    <h2>مولّد الخطة</h2>
+    <div class="form">
+      <div class="field"><label for="month">الشهر المستهدف للختمة</label>
+        <select id="month"></select></div>
+      <div class="field"><label for="custom">اسم مخصص (اختياري)</label>
+        <input id="custom" type="text" placeholder="مثال: ختمة العطلة"></div>
+      <div class="field"><label for="dStart">تاريخ بداية الختمة</label>
+        <input id="dStart" type="date"></div>
+      <div class="field"><label for="dEnd">تاريخ نهاية الختمة</label>
+        <input id="dEnd" type="date"></div>
+      <div class="row-actions">
+        <button class="btn" id="btnGen" type="button">توليد الخطة</button>
+        <button class="btn soft" id="btn29" type="button">ضبط 29 يوماً</button>
+        <button class="btn soft" id="btn30" type="button">ضبط 30 يوماً</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== الجدول الشهري ===== -->
+  <section class="section">
+    <div class="section-head">
+      <h2 id="planTitle">الجدول الشهري</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn soft" id="btnArchive" type="button">حفظ في الأرشيف</button>
+        <button class="btn" id="btnRepeat" type="button">تكرار الخطة لشهر جديد</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>اليوم / التاريخ</th><th>الحزب</th><th>الورد اليومي (من ← إلى)</th><th>تمت التلاوة</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== الأرشيف ===== -->
+  <section class="section card" aria-label="الأرشيف">
+    <h2>أرشيف الختمات السابقة</h2>
+    <div id="archive"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =====================================================
+   كيف يعمل تقسيم الأحزاب؟ (اقرئي هذا الشرح أولاً)
+   -----------------------------------------------------
+   • القرآن برواية ورش = 60 حزباً، والحزب = 8 أثمان.
+     إذن المجموع = 60 × 8 = 480 ثمناً، نرقّمها من 1 إلى 480.
+   • نحوّل الأيام إلى "حدود" تقسم الـ 480 ثمناً بالتساوي:
+         بداية اليوم i = floor( i × 480 / عدد الأيام ) + 1
+         نهاية اليوم i = floor( (i+1) × 480 / عدد الأيام )
+     (i يبدأ من 0). هكذا لا يضيع أي ثمن، ولا يتكرر أي ثمن،
+     والفرق بين أكبر وأصغر ورد لا يتجاوز ثمناً واحداً.
+     مثال: 30 يوماً ← 16 ثمناً يومياً (حزبان) بالضبط.
+     مثال: 29 يوماً ← بعض الأيام 16 ثمناً وبعضها 17.
+   • تحويل رقم الثمن t إلى موضعه:
+         رقم الحزب       = ceil( t / 8 )
+         الثمن داخل الحزب = ((t − 1) mod 8) + 1
+   ===================================================== */
+const TOTAL_THUMN = 480;   // 60 حزباً × 8 أثمان
+const PER_HIZB = 8;
+const STORAGE_KEY = 'warshKhatma.v1';
+
+/* أسماء السور عند بدايات الأثمان.
+   أسماء السور تختلف بحسب المصحف الورشي المعتمد، لذلك تُركت فارغة
+   عمداً لتعبئتيها من المصحف. المفتاح = رقم الثمن (1..480)،
+   مثال:  { 1: 'الفاتحة', 17: 'آل عمران' }
+   وكل ثمن مذكور هنا يظهر اسمه تلقائياً بجانب الورد. */
+const SURAH_MARKERS = {};
+
+const MONTHS = ['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة',
+                'رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+
+/* ---------- الحالة ---------- */
+// cur: الختمة الحالية، archive: السجل السابق
+let state = { cur: null, archive: [] };
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function load() { try { const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); if (s) state = s; } catch (e) {} }
+
+/* ---------- التواريخ ---------- */
+const iso = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const todayISO = () => iso(new Date());
+const addDays = (s, n) => { const d = new Date(s + 'T00:00'); d.setDate(d.getDate() + n); return iso(d); };
+const diffDays = (a, b) => Math.round((new Date(b + 'T00:00') - new Date(a + 'T00:00')) / 864e5);
+const fmt = (s, o) => new Date(s + 'T00:00').toLocaleDateString('ar-u-nu-latn', o);
+
+function toast(m) {
+  const t = $('toast'); t.textContent = m; t.classList.add('show');
+  clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ---------- التقسيم ---------- */
+// يعيد مصفوفة من {from, to} لكل يوم (انظري الشرح أعلاه)
+function splitThumns(nDays) {
+  return Array.from({ length: nDays }, (_, i) => ({
+    from: Math.floor(i * TOTAL_THUMN / nDays) + 1,
+    to:   Math.floor((i + 1) * TOTAL_THUMN / nDays)
+  }));
+}
+const hizbOf  = t => Math.ceil(t / PER_HIZB);
+const thumnIn = t => ((t - 1) % PER_HIZB) + 1;
+const posLabel = t => `الحزب ${hizbOf(t)} · الثمن ${thumnIn(t)}` + (SURAH_MARKERS[t] ? ` (${esc(SURAH_MARKERS[t])})` : '');
+
+/* ---------- حساب التقدم ---------- */
+function progress(plan) {
+  const done = plan.days.filter(d => d.done).reduce((s, d) => s + Math.max(0, d.to - d.from + 1), 0);
+  return { done, pct: Math.round(done / TOTAL_THUMN * 100) };
+}
+
+/* =====================================================
+   توليد الخطة
+   ===================================================== */
+function buildPlan(name, dStart, dEnd) {
+  const n = diffDays(dStart, dEnd) + 1;
+  const parts = splitThumns(n);
+  return { id: Date.now(), name, dStart, dEnd,
+           days: parts.map((p, i) => ({ date: addDays(dStart, i), from: p.from, to: p.to, done: false })) };
+}
+
+function generate() {
+  const dS = $('dStart').value, dE = $('dEnd').value;
+  if (!dS || !dE || dE < dS) return toast('تحقّقي من تاريخ البداية والنهاية');
+  const n = diffDays(dS, dE) + 1;
+  if (n > 366) return toast('أقصى مدة للخطة 366 يوماً');
+  if (n > TOTAL_THUMN) return toast('عدد الأيام أكبر من 480، اختاري مدة أقصر');
+  if (state.cur && progress(state.cur).done > 0 && !confirm('سيُستبدل الجدول الحالي. احفظيه في الأرشيف أولاً إن أردتِ. هل تتابعين؟')) return;
+  const name = $('custom').value.trim() || 'ختمة ' + $('month').value;
+  state.cur = buildPlan(name, dS, dE);
+  save(); render(); toast('تم توليد الخطة');
+}
+
+/* =====================================================
+   الأرشيف والتكرار
+   ===================================================== */
+// يحفظ الختمة الحالية في الأرشيف (يحدّث السجل نفسه إن حُفظ سابقاً)
+function archiveCurrent() {
+  const c = state.cur; if (!c) return false;
+  const p = progress(c);
+  const entry = { id: c.id, name: c.name, dStart: c.dStart, dEnd: c.dEnd, pct: p.pct,
+                  hizbDone: +(p.done / PER_HIZB).toFixed(1), daysDone: c.days.filter(d => d.done).length,
+                  daysTotal: c.days.length };
+  const i = state.archive.findIndex(a => a.id === c.id);
+  if (i >= 0) state.archive[i] = entry; else state.archive.unshift(entry);
+  save(); return true;
+}
+
+// تكرار الخطة: نفس المدة، تبدأ في اليوم التالي لنهاية الختمة الحالية
+function repeatPlan() {
+  const c = state.cur; if (!c) return;
+  archiveCurrent();
+  const n = c.days.length, start = addDays(c.dEnd, 1);
+  state.cur = buildPlan(c.name, start, addDays(start, n - 1));
+  $('dStart').value = state.cur.dStart; $('dEnd').value = state.cur.dEnd;
+  save(); render(); toast('حُفظت السابقة في الأرشيف وبدأت خطة جديدة');
+}
+
+/* =====================================================
+   الرسم
+   ===================================================== */
+function render() {
+  const c = state.cur, tb = $('tbody');
+  $('btnArchive').disabled = $('btnRepeat').disabled = !c;
+  $('planTitle').textContent = c ? c.name : 'الجدول الشهري';
+
+  if (!c) {
+    tb.innerHTML = '<tr><td colspan="4" class="empty">لا توجد خطة بعد. اختاري الشهر والتواريخ ثم اضغطي «توليد الخطة».</td></tr>';
+  } else {
+    const today = todayISO();
+    tb.innerHTML = c.days.map((d, i) => {
+      const h1 = hizbOf(d.from), h2 = hizbOf(d.to);
+      return `<tr class="${d.done ? 'done' : ''} ${d.date === today ? 'today' : ''}">
+        <td><div class="day">${fmt(d.date, { weekday: 'long' })}</div>
+            <div class="sub">${fmt(d.date, { day: 'numeric', month: 'long', year: 'numeric' })}</div></td>
+        <td><span class="hizb-badge">${h1 === h2 ? h1 : h1 + ' – ' + h2}</span></td>
+        <td class="c-range range">${posLabel(d.from)}<br><span class="sub">إلى</span> ${posLabel(d.to)}</td>
+        <td><input type="checkbox" data-i="${i}" aria-label="تمت التلاوة" ${d.done ? 'checked' : ''}></td>
+      </tr>`;
+    }).join('');
+  }
+  updateStats(); renderArchive();
+}
+
+function updateStats() {
+  const c = state.cur;
+  const p = c ? progress(c) : { done: 0, pct: 0 };
+  $('sPct').textContent = p.pct;
+  $('sBar').style.width = p.pct + '%';
+  const left = (TOTAL_THUMN - p.done) / PER_HIZB;
+  $('sHizb').textContent = Number.isInteger(left) ? left : left.toFixed(1);
+
+  let days = 0, note = 'بما فيها اليوم';
+  if (c) {
+    const t = todayISO();
+    if (t < c.dStart) { days = diffDays(c.dStart, c.dEnd) + 1; note = 'لم تبدأ الختمة بعد'; }
+    else if (t <= c.dEnd) days = diffDays(t, c.dEnd) + 1;
+    else note = 'انتهت مدة الختمة';
+  }
+  $('sDays').textContent = days; $('sDaysNote').textContent = note;
+}
+
+function renderArchive() {
+  const box = $('archive');
+  if (!state.archive.length) { box.innerHTML = '<p class="empty">لا توجد ختمات محفوظة بعد.</p>'; return; }
+  box.innerHTML = state.archive.map(a => `
+    <div class="archive-item">
+      <div><strong>${esc(a.name)}</strong>
+        <div class="sub">${fmt(a.dStart, { day: 'numeric', month: 'long' })} – ${fmt(a.dEnd, { day: 'numeric', month: 'long', year: 'numeric' })}
+          · ${a.daysDone} من ${a.daysTotal} يوماً · ${a.hizbDone} حزباً</div></div>
+      <div style="text-align:left"><span class="pct">${a.pct}%</span>
+        <button class="btn danger small" data-del="${a.id}" type="button">حذف</button></div>
+      <div class="bar"><i style="width:${a.pct}%"></i></div>
+    </div>`).join('');
+}
+
+/* =====================================================
+   الأحداث
+   ===================================================== */
+// تسجيل إتمام اليوم: يتلوّن الصف وتتحدث البطاقات فوراً
+$('tbody').addEventListener('change', e => {
+  const i = e.target.dataset.i; if (i === undefined) return;
+  state.cur.days[i].done = e.target.checked;
+  e.target.closest('tr').classList.toggle('done', e.target.checked);
+  save(); updateStats();
+});
+$('archive').addEventListener('click', e => {
+  const id = e.target.dataset.del; if (!id) return;
+  if (confirm('حذف هذه الختمة من الأرشيف؟')) { state.archive = state.archive.filter(a => a.id != id); save(); renderArchive(); }
+});
+$('btnGen').addEventListener('click', generate);
+$('btnRepeat').addEventListener('click', repeatPlan);
+$('btnArchive').addEventListener('click', () => { if (archiveCurrent()) { renderArchive(); toast('حُفظت الختمة في الأرشيف'); } });
+[29, 30].forEach(n => $('btn' + n).addEventListener('click', () => {
+  if (!$('dStart').value) $('dStart').value = todayISO();
+  $('dEnd').value = addDays($('dStart').value, n - 1);
+}));
+
+/* =====================================================
+   التشغيل الأولي
+   ===================================================== */
+load();
+$('month').innerHTML = MONTHS.map(m => `<option>${m}</option>`).join('');
+$('month').value = 'رمضان';
+$('dStart').value = state.cur ? state.cur.dStart : todayISO();
+$('dEnd').value = state.cur ? state.cur.dEnd : addDays(todayISO(), 29);
+render();
+</script>
+</body>
+</html>
